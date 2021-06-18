@@ -15,6 +15,6 @@ class Auth
 {
     public function check(string $router, array $params = [], array $deviceInfo =[]): array
     {
-        return CClient::request('center', 'Auth/check', false, 'array', $router, $params, $deviceInfo);
+        return (new CClient())->request('center', 'Auth/check', false, 'array', $router, $params, $deviceInfo);
     }
 }

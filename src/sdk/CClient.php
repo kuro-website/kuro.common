@@ -22,28 +22,35 @@ class CClient
      *
      * @var string
      */
-    protected static $project;
+    protected $project;
 
     /**
      * 命名空间
      *
      * @var string
      */
-    protected static $namespace;
+    protected $namespace;
 
     /**
      * 模块
      *
      * @var string
      */
-    protected static $module;
+    protected $module;
 
     /**
      * 方法
      *
      * @var string
      */
-    protected static $method;
+    protected $method;
+
+    /**
+     * 多文件
+     *
+     * @var array
+     */
+    private $files;
 
     /**
      * 请求接口
@@ -58,16 +65,32 @@ class CClient
      * @throws Exception
      * @author sunanzhi <sunanzhi@hotmail.com>
      */
-    public static function request(string $project, string $url, bool $async, string $returnType, ...$args)
+    public function request(string $project, string $url, bool $async, string $returnType, ...$args)
     {
-        self::$project = $project;
+        $this->project = $project;
         // 获取api参数
-        $apiParams = self::getParams($url);
+        $apiParams = $this->getParams($url);
         // 封装请求参数
-        $requestParams = self::packageArgs($apiParams, $args);
+        $requestParams = $this->packageArgs($apiParams, $args);
         // 获取请求url
-        $apiUrl = config('api.' . self::$project) . '/' . $url;
-        return self::guzzleRequest($apiUrl, $requestParams, $async, $returnType);
+        $apiUrl = config('api.' . $this->project) . '/' . $url;
+
+        return $this->guzzleRequest($apiUrl, $requestParams, $async, $returnType);
+    }
+
+    /**
+     * 设置文件
+     *
+     * @param array $files
+     *
+     * @author sunanzhi <sunanzhi@kurogame.com>
+     * @since 2021.6.18 17:36
+     */
+    public function setFiles(array $files)
+    {
+        $this->files = $files;
+
+        return $this;
     }
 
     /**
@@ -79,16 +102,16 @@ class CClient
      * @throws ReflectionException
      * @author sunanzhi <sunanzhi@hotmail.com>
      */
-    private static function getParams(string $url): array
+    private function getParams(string $url): array
     {
         // 当前命名空间
-        self::$namespace = (new \ReflectionClass(__CLASS__))->getNamespaceName();
+        $this->namespace = (new \ReflectionClass(__CLASS__))->getNamespaceName();
         // 获取模块
         $urlExplode = explode('/', $url);
-        self::$module = $urlExplode[0];
-        self::$method = $urlExplode[1];
+        $this->module = $urlExplode[0];
+        $this->method = $urlExplode[1];
         // 获取接口参数
-        return array_column((new \ReflectionMethod(self::$namespace . '\\' .self::$project .'\\'. self::$module, self::$method))->getParameters(), 'name');
+        return array_column((new \ReflectionMethod($this->namespace . '\\' .$this->project .'\\'. $this->module, $this->method))->getParameters(), 'name');
     }
 
     /**
@@ -100,14 +123,17 @@ class CClient
      *
      * @author sunanzhi <sunanzhi@hotmail.com>
      */
-    private static function packageArgs(array $apiParams, array $args): array
+    private function packageArgs(array $apiParams, array $args): array
     {
         $resParams = [];
         $i = 0;
         foreach ($apiParams as $v) {
-            $resParams[$v] = $args[$i];
-            $i++;
+            if(isset($args[$i])) {
+                $resParams[$v] = $args[$i];
+                $i++;
+            }
         }
+
         return $resParams;
     }
 
@@ -123,7 +149,7 @@ class CClient
      * @throws GuzzleException|Exception
      * @author sunanzhi <sunanzhi@hotmail.com>
      */
-    private static function guzzleRequest(string $url, array $args, bool $async, string $returnType)
+    private function guzzleRequest(string $url, array $args, bool $async, string $returnType)
     {
         // 异步设置丢队列
         if($async === true){
@@ -131,10 +157,22 @@ class CClient
         }
         // 非异步设置正常走http请求
         $guzzleClient = new \GuzzleHttp\Client(['verify' => false]);
-        $body = json_encode($args);
-        $headers = self::getHeaders();
+        $headers = $this->getHeaders();
+        if(!empty($this->files)) {
+            // 代表有文件
+            $options = [
+                'headers' => [
+                    'Authorization' => request()->header('Authorization')
+                ],
+                'multipart' => $this->getMultipart($args),
+                'http_errors' => false,
+            ];
+        } else {
+            $body = json_encode($args);
+            $options = ['body' => $body, 'headers' => $headers, 'http_errors' => false];
+        }
         try {
-            $response = $guzzleClient->request('POST', $url, ['body' => $body, 'headers' => $headers, 'http_errors' => false]);
+            $response = $guzzleClient->post($url, $options);
         } catch (\Throwable $e) {
             throw new HttpException($e->getMessage());
         }
@@ -151,9 +189,28 @@ class CClient
             response(['_message' => $object['_message'] ?? 'Internal Server Error', '_code' => $statusCode, '_returnType' => 'error'], $statusCode, [], 'json')->send();
             exit;
         }
-        $object = self::bodyToObject($object);
+        $object = $this->bodyToObject($object);
 
         return $object;
+    }
+
+    private function getMultipart(array $args)
+    {
+        $multipart = [];
+        foreach ($args as $k => $v) {
+            $multipart[] = [
+                'name'     => $k,
+                'contents' => $v,
+            ];
+        }
+        foreach ($this->files as $k => $v) {
+            $multipart[] = [
+                'name'     => $k,
+                'contents' => fopen($v, 'r'),
+            ];
+        }
+
+        return $multipart;
     }
 
     /**
@@ -163,7 +220,7 @@ class CClient
      *
      * @author sunanzhi <sunanzhi@hotmail.com>
      */
-    private static function getHeaders()
+    private function getHeaders()
     {
         $authorization = request()->header('Authorization');
         $res = [
@@ -179,7 +236,7 @@ class CClient
      *
      * @return mixed|string|int
      */
-    private static function bodyToObject(array $body)
+    private function bodyToObject(array $body)
     {
         $status = 1;
         isset($body['_returnType']) && ($status <<= 1)

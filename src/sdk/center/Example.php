@@ -15,6 +15,6 @@ class Example
 {
     public function returnBool(): bool
     {
-        return CClient::request('center', 'Example/returnBool', false, 'bool');
+        return (new CClient())->request('center', 'Example/returnBool', false, 'bool');
     }
 }
