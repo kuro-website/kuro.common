@@ -29,6 +29,7 @@ class ExceptionHandle extends Handle
         ValidateException::class,
         LogicException::class,
         InvalidArgumentException::class,
+        HttpException::class
     ];
 
     /**
