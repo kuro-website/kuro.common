@@ -54,7 +54,7 @@ class Producer
             'extra' => $extra
         ];
 
-        (new Queue)->push(Consumer::class, $data, $queue = null);
+        Queue::push(Consumer::class, $data, $queue = null);
     }
 
     /**

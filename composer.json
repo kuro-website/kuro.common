@@ -28,7 +28,8 @@
             "kuro\\exception\\": "src/exception/",
             "kuro\\lib\\": "src/lib/",
             "kuro\\dto\\": "src/dto/",
-            "kuro\\sdk\\": "src/sdk/"
+            "kuro\\sdk\\": "src/sdk/",
+            "kuro\\service\\": "src/service/"
         }
     }
 }

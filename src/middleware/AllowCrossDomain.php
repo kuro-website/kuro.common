@@ -19,7 +19,7 @@ class AllowCrossDomain
         header('Access-Control-Max-Age: 3600');
         header('Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE');
         header('Access-Control-Allow-Credentials: false');
-        header('Access-Control-Allow-Headers: Content-Type, Content-Length, Authorization, Accept, X-Requested-With');
+        header('Access-Control-Allow-Headers: Content-Type, Content-Length, Authorization, Accept, X-Requested-With, Site-Id');
         if (strtoupper($request->method()) == "OPTIONS") {
             Response::create()->send();
             exit;
