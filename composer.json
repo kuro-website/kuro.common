@@ -1,0 +1,34 @@
+{
+    "name": "kuro/common",
+    "description": "kuro common",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "sunanzhi",
+            "email": "sunanzhi@hotmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.3.0",
+        "topthink/framework": "^6.0.0",
+        "topthink/think-orm": "^2.0",
+        "topthink/think-queue": "^3.0",
+        "phpdocumentor/reflection-docblock": "^5.1",
+        "phpoffice/phpspreadsheet": "^1.17",
+        "guzzlehttp/guzzle": "^7.2",
+        "ext-json": "*",
+        "ext-zip": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "kuro\\base\\": "src/base/",
+            "kuro\\middleware\\": "src/middleware/",
+            "kuro\\console\\": "src/console/",
+            "kuro\\exception\\": "src/exception/",
+            "kuro\\lib\\": "src/lib/",
+            "kuro\\dto\\": "src/dto/",
+            "kuro\\sdk\\": "src/sdk/"
+        }
+    }
+}
