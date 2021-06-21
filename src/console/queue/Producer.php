@@ -30,7 +30,7 @@ class Producer
      * @throws ReflectionException
      * @author sunanzhi <sunanzhi@kurogame.com>
      */
-    public static function send(string $class, string $action, array $params, array $extra = [])
+    public static function send(string $class, string $action, array $params, array $extra = [], string $queue = null)
     {
         $method = new \ReflectionMethod($class, $action);
         $parameters = $method->getParameters();
@@ -54,7 +54,7 @@ class Producer
             'extra' => $extra
         ];
 
-        Queue::push(Consumer::class, $data, $queue = null);
+        Queue::push(Consumer::class, $data, $queue);
     }
 
     /**
