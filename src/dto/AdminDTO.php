@@ -31,6 +31,16 @@ class AdminDTO
      */
     private $mobile;
 
+    /**
+     * @var array
+     */
+    private $roleId;
+
+    /**
+     * @var string
+     */
+    private $issued;
+
     public function setAdminId(int $adminId)
     {
         $this->adminId = $adminId;
@@ -79,5 +89,25 @@ class AdminDTO
     public function getMobile(): string
     {
         return $this->mobile;
+    }
+
+    public function setRoleId(array $roleIds)
+    {
+        $this->roleId = $roleIds;
+    }
+
+    public function getRoleId(): array
+    {
+        return $this->roleId;
+    }
+
+    public function setIssued(string $issued)
+    {
+        $this->issued = $issued;
+    }
+
+    public function getIssued(): string
+    {
+        return $this->issued;
     }
 }
