@@ -8,6 +8,7 @@
  */
 namespace kuro\base;
 
+use kuro\exception\LogicException;
 use think\Model;
 
 /**
@@ -49,5 +50,37 @@ class BaseModel extends Model
             'var_page' => 'page',
             'query' => request()->param(),
         ];
+    }
+
+    /**
+     * 批量修改状态
+     *
+     * @param array $ids 主键
+     * @param int $status 修改后的状态
+     * @param array $statusPool 状态池
+     * @return bool
+     *
+     * @throws LogicException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @author sunanzhi <sunanzhi@kurogame.com>
+     * @since 2021.6.10 10:46
+     */
+    public function batchStatus(array $ids, int $status, array $statusPool): bool
+    {
+        if (!in_array($status, $statusPool)) {
+            throw new LogicException('state value error');
+        }
+        $list = self::where($this->getPk(), 'in', $ids)->select();
+        foreach ($list as $model) {
+            if ($model->status == $status) {
+                continue;
+            }
+            $model->status = $status;
+            $model->save();
+        }
+
+        return true;
     }
 }

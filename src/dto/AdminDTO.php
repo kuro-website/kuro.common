@@ -41,6 +41,11 @@ class AdminDTO
      */
     private $issued;
 
+    /**
+     * @var integer
+     */
+    private $siteId;
+
     public function setAdminId(int $adminId)
     {
         $this->adminId = $adminId;
@@ -109,5 +114,15 @@ class AdminDTO
     public function getIssued(): string
     {
         return $this->issued;
+    }
+
+    public function setSiteId(int $siteId)
+    {
+        $this->siteId = $siteId;
+    }
+
+    public function getSiteId(): int
+    {
+        return $this->siteId;
     }
 }
