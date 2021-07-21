@@ -45,10 +45,10 @@ class Consumer
         }
         try{
             $args = $data['args'];
-            $res =  call_user_func_array([$this->class, $this->action], unserialize($args));
+            $res = call_user_func_array([$this->class, $this->action], unserialize($args));
             $job->delete();
         }catch(\Throwable $e){
-            Log::write([$this->action.' '.date('Y-m-d H:i:s').' res:'.json_encode($res, JSON_UNESCAPED_UNICODE), $e->getMessage()], 'queue');
+            Log::write(['action' => $this->action, 'time' => date('Y-m-d H:i:s'), 'errorMessage' => $e->getMessage()], 'queue');
         }
     }
 
