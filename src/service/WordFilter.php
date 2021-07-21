@@ -31,7 +31,7 @@ class WordFilter extends Service
      */
     public function register()
     {
-        $client = new WordFilterClient(Config::get('gprc.wordFilter.host'), [
+        $client = new WordFilterClient(Config::get('grpc.wordFilter.host'), [
             'credentials' => ChannelCredentials::createInsecure(),
             'timeout' => 1000000,
         ]);

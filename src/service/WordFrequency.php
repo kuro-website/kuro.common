@@ -31,7 +31,7 @@ class WordFrequency extends Service
      */
     public function register()
     {
-        $client = new WordFrequencyClient(Config::get('gprc.wordFrequency.host'), [
+        $client = new WordFrequencyClient(Config::get('grpc.wordFrequency.host'), [
             'credentials' => ChannelCredentials::createInsecure(),
             'timeout' => 1000000,
         ]);
