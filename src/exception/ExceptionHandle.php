@@ -79,6 +79,7 @@ class ExceptionHandle extends Handle
                 exit;
             // 接口废除
             case $e instanceof AbandonException : 
+            case $e instanceof NotFoundException :
                 response(['_message' => $e->getMessage(), '_code' => 404, '_returnType' => 'AbandonException'], 404, [], 'json')->send();
                 exit;
         }
