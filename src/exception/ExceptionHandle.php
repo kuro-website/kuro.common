@@ -3,6 +3,7 @@ namespace kuro\exception;
 
 use think\db\exception\DataNotFoundException;
 use think\db\exception\ModelNotFoundException;
+use think\exception\ErrorException;
 use think\exception\Handle;
 use think\exception\HttpException;
 use think\exception\HttpResponseException;
@@ -85,6 +86,9 @@ class ExceptionHandle extends Handle
         }
         // 其他错误交给系统处理
         if(env('APP_DEBUG')) {
+            if($e instanceof ErrorException) {
+                dd($e);
+            }
             (parent::render($request, $e))->send();
             exit;
         } else {
