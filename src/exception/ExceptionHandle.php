@@ -86,9 +86,6 @@ class ExceptionHandle extends Handle
         }
         // 其他错误交给系统处理
         if(env('APP_DEBUG')) {
-            if($e instanceof ErrorException) {
-                dd($e);
-            }
             (parent::render($request, $e))->send();
             exit;
         } else {
