@@ -3,6 +3,7 @@ namespace kuro\exception;
 
 use think\db\exception\DataNotFoundException;
 use think\db\exception\ModelNotFoundException;
+use think\exception\ErrorException;
 use think\exception\Handle;
 use think\exception\HttpException;
 use think\exception\HttpResponseException;

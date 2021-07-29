@@ -9,12 +9,13 @@
 namespace kuro\middleware;
 
 use kuro\console\queue\Producer;
+use kuro\dto\AdminDTO;
 use kuro\exception\AbandonException;
 use kuro\exception\AuthException;
 use kuro\exception\ForbiddenException;
-use kuro\lib\request\Center;
 use Closure;
 use Exception;
+use kuro\sdk\center\Auth;
 use think\Request;
 use Throwable;
 use phpDocumentor\Reflection\DocBlockFactory;
@@ -94,7 +95,11 @@ class AuthRequest
     {
         $authorization = $request->header('Authorization');
         throwIf(empty($authorization), AuthException::class, 'Missing Authorization header');
-        $centerObj = new Center();
-        $centerObj->checkToken($authorization, '/'.request()->pathinfo(), array_merge($request->get(), $request->post()));
+        $userInfo = (new Auth())->check('/'.request()->pathinfo(), array_merge($request->get(), $request->post()));
+        $adminDTO = new AdminDTO();
+        $adminDTO->setAdminId($userInfo['adminId']);
+        $adminDTO->setUsername($userInfo['username']);
+
+        app()->admin = $adminDTO;
     }
 }
