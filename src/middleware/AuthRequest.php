@@ -15,6 +15,7 @@ use kuro\exception\AuthException;
 use kuro\exception\ForbiddenException;
 use Closure;
 use Exception;
+use kuro\exception\NotFoundException;
 use kuro\sdk\center\Auth;
 use think\Request;
 use Throwable;
