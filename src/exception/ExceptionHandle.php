@@ -81,7 +81,7 @@ class ExceptionHandle extends Handle
             // 接口废除
             case $e instanceof AbandonException : 
             case $e instanceof NotFoundException :
-                response(['_message' => $e->getMessage(), '_code' => 404, '_returnType' => class_basename($e)], 404, [], 'json')->send();
+                response(['_message' => env('APP_DEBUG') ? $e->getMessage() : 'Not Found', '_code' => 404, '_returnType' => class_basename($e)], 404, [], 'json')->send();
                 exit;
         }
         // 其他错误交给系统处理
