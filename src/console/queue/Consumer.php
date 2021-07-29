@@ -48,7 +48,13 @@ class Consumer
             $res = call_user_func_array([$this->class, $this->action], unserialize($args));
             $job->delete();
         }catch(\Throwable $e){
-            Log::write(['action' => $this->action, 'time' => date('Y-m-d H:i:s'), 'errorMessage' => $e->getMessage()], 'queue');
+            Log::write([
+                'jobId' => $job->getJobId(),
+                'action' => $this->action,
+                'time' => date('Y-m-d H:i:s'),
+                'errorMessage' => $e->getMessage(),
+                'data' => $data,
+            ], 'queue');
         }
     }
 
