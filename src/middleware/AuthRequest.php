@@ -41,7 +41,11 @@ class AuthRequest
     public function handle(Request $request, Closure $next)
     {
         $baseUrlArr = $this->getNamespaceAndMethod($request);
-        $method = new \ReflectionMethod($baseUrlArr['namespace'], $baseUrlArr['method']);
+        try {
+            $method = new \ReflectionMethod($baseUrlArr['namespace'], $baseUrlArr['method']);
+        } catch (\Throwable $e) {
+            throw new NotFoundException($e->getMessage());
+        }
         $docComment = $method->getDocComment();
         $factory = DocBlockFactory::createInstance();
         $docblock = $factory->create($docComment);
