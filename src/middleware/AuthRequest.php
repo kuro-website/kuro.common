@@ -51,10 +51,10 @@ class AuthRequest
         $factory = DocBlockFactory::createInstance();
         $docblock = $factory->create($docComment);
         if($docblock->hasTag('abandon')){
-            throw new AbandonException('接口已遗弃');
+            throw new AbandonException('Interface is abandoned');
         }
         if($docblock->hasTag('internal')){
-            throw new ForbiddenException('不对外开放');
+            throw new ForbiddenException('Internal visit');
         }
         // 接口角色 true: 可游客 false: 必须登陆
         $isGuest = $docblock->hasTag('guest');
@@ -83,7 +83,7 @@ class AuthRequest
     private function getNamespaceAndMethod(Request $request): array
     {
         $baseUrlArr = explode('/', $request->baseUrl());
-        throwIf(count($baseUrlArr) < 3, ForbiddenException::class, '访问出错');
+        throwIf(count($baseUrlArr) < 3, ForbiddenException::class, 'Access error');
         $namespace = 'app\\controller\\' . ucfirst($baseUrlArr[1]);
 
         return ['namespace' => $namespace, 'controller' => $baseUrlArr[1], 'method' => $baseUrlArr[2]];
