@@ -68,6 +68,7 @@ class ExceptionHandle extends Handle
                 exit;
             // 参数错误异常
             case $e instanceof InvalidArgumentException :
+            case $e instanceof \kuro\exception\ValidateException :
                 response(['_message' => $e->getMessage(), '_code' => 400, '_returnType' => 'InvalidArgumentException'], 400, [], 'json')->send();
                 exit;
             // 登陆auth异常
