@@ -51,6 +51,20 @@ class Email
      */
     private $company;
 
+    /**
+     * 回信地址
+     *
+     * @var string
+     */
+    private $replyTo;
+
+    /**
+     * 回信名称
+     *
+     * @var string
+     */
+    private $replyName;
+
     public function __construct(string $platform = 'aliyun')
     {
         $config = config('email.'.$platform);
@@ -60,6 +74,8 @@ class Email
         $this->password = $config['password'];
         $this->fromEmail = $config['fromEmail'];
         $this->company = $config['company'];
+        $this->replyTo = $config['replyTo'] ?? '';
+        $this->replyName = $config['replyName'] ?? '';
     }
 
 
@@ -88,9 +104,9 @@ class Email
         $mail->Password = $this->password;                      // SMTP服务器密码
         $mail->SetFrom($this->fromEmail, $this->company);
 
-        $replyEmail = '';                                       //留空则为发件人EMAIL
-        $replyName = '';                                        //回复名称（留空则为发件人名称）
-        $mail->AddReplyTo($replyEmail, $replyName);
+        // $replyEmail = '';                                       //留空则为发件人EMAIL
+        // $replyName = '';                                        //回复名称（留空则为发件人名称）
+        $mail->AddReplyTo($this->replyTo, $this->replyName);
         $mail->Subject = $subject;
         $mail->MsgHTML($body);
         $mail->AddAddress($toMail, $name);
