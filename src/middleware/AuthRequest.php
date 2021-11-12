@@ -83,10 +83,21 @@ class AuthRequest
     private function getNamespaceAndMethod(Request $request): array
     {
         $baseUrlArr = explode('/', $request->baseUrl());
-        throwIf(count($baseUrlArr) < 3, ForbiddenException::class, 'Access error');
-        $namespace = 'app\\controller\\' . ucfirst($baseUrlArr[1]);
+        $countUrlArr = count($baseUrlArr);
+        throwIf($countUrlArr < 3, ForbiddenException::class, '访问出错');
+        $namespace = 'app\\controller\\';
+        $controller = '';
+        for ($i = 1; $i < $countUrlArr - 1; $i++) {
+            if ($i == $countUrlArr - 2) {
+                $add = ucfirst($baseUrlArr[$i]);
+                $controller = $add;
+            } else {
+                $add = $baseUrlArr[$i] . '\\';
+            }
+            $namespace .= $add;
+        }
 
-        return ['namespace' => $namespace, 'controller' => $baseUrlArr[1], 'method' => $baseUrlArr[2]];
+        return ['namespace' => $namespace, 'controller' => $controller, 'method' => end($baseUrlArr)];
     }
 
     /**
