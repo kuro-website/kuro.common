@@ -5,6 +5,7 @@ namespace kuro\sdk;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\ServerException;
 use kuro\console\queue\Producer;
+use kuro\exception\HttpException;
 use think\facade\Cache;
 
 /**
