@@ -22,7 +22,8 @@ class GlobalResponse
     {
         $response = $next($request);
         // 网页抱错信息直接输出
-        if(defined('DEBUG_ERROR') && DEBUG_ERROR === true) {
+        if((defined('DEBUG_ERROR') && DEBUG_ERROR === true)
+            || get_class($response) == 'think\response\Redirect') {
             return $response;
         }
 
