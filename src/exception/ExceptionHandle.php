@@ -91,7 +91,7 @@ class ExceptionHandle extends Handle
             (parent::render($request, $e))->send();
             exit;
         } else {
-            Log::write($e->getMessage(), 'error');
+            Log::write($e->__toString(), 'error');
             // 输出错误到钉钉
             response(['_message' => 'Internal Server Error', '_code' => 500, '_returnType' => 'error'], 500, [], 'json')->send();
             exit;
