@@ -115,6 +115,7 @@ class AuthRequest
         $adminDTO = new AdminDTO();
         $adminDTO->setAdminId($userInfo['adminId']);
         $adminDTO->setUsername($userInfo['username']);
+        $adminDTO->setEmail($userInfo['email']);
 
         app()->admin = $adminDTO;
     }
