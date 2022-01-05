@@ -29,14 +29,21 @@ class Lock
      */
     public static function check(string $key, int $expire = 3):bool
     {
-        if(!empty(Cache::get($key))) {
-            // 有锁
-            return true;
-        } else {
-            self::set($key, $expire);
+        $redis = Cache::store('redis')->handler();
+
+        if ($redis->setnx($key, time() + $expire)) {
+            return false;
+        }
+        $time = $redis->get($key);
+        if(time() > $time){
+            self::delete($key);
+           
+            $redis->setnx($key, time() + $expire);
+
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -51,7 +58,8 @@ class Lock
      */
     public static function set(string $key, int $expire = 3): bool
     {
-        Cache::set($key, true, $expire);
+        $redis = Cache::store('redis')->handler();
+        $redis->setnx($key, time() + $expire);
 
         return true;
     }
@@ -68,7 +76,8 @@ class Lock
      */
     public static function delete(string $key): bool
     {
-        Cache::delete($key);
+        $redis = Cache::store('redis')->handler();
+        $redis->del($key);
 
         return true;
     }
