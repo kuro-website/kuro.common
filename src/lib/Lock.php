@@ -31,37 +31,7 @@ class Lock
     {
         $redis = Cache::store('redis')->handler();
 
-        if ($redis->setnx($key, time() + $expire)) {
-            return false;
-        }
-        $time = $redis->get($key);
-        if(time() > $time){
-            self::delete($key);
-           
-            $redis->setnx($key, time() + $expire);
-
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * 设置锁
-     *
-     * @param string $key
-     * @param integer $expire
-     * @return bool
-     *
-     * @author sunanzhi <sunanzhi@kurogame.com>
-     * @since 2021.4.20 17:27
-     */
-    public static function set(string $key, int $expire = 3): bool
-    {
-        $redis = Cache::store('redis')->handler();
-        $redis->setnx($key, time() + $expire);
-
-        return true;
+        return !$redis->set($key, 1, ['NX', 'PX' => $expire * 1000]);
     }
 
     /**
@@ -77,7 +47,14 @@ class Lock
     public static function delete(string $key): bool
     {
         $redis = Cache::store('redis')->handler();
-        $redis->del($key);
+        $lua =<<<EOT
+if redis.call("get",KEYS[1]) == ARGV[1] then
+    return redis.call("del",KEYS[1])
+else
+    return 0
+end
+EOT;
+        $redis->eval($lua, array($key, 1), 1);
 
         return true;
     }
