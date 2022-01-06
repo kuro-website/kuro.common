@@ -17,6 +17,10 @@ use think\facade\Cache;
  */
 class Lock
 {
+    const IF_NOT_EXISTS = 'NX';
+    const MILLISECOND_EXPIRE_TIME = 'PX';
+    const LOCK_VALUE = 1;
+
     /**
      * 检查是否有锁
      *
@@ -31,7 +35,7 @@ class Lock
     {
         $redis = Cache::store('redis')->handler();
 
-        return !$redis->set($key, 1, ['NX', 'PX' => $expire * 1000]);
+        return !$redis->set($key, self::LOCK_VALUE, [self::IF_NOT_EXISTS, self::MILLISECOND_EXPIRE_TIME => $expire * 1000]);
     }
 
     /**
@@ -54,7 +58,7 @@ else
     return 0
 end
 EOT;
-        $redis->eval($lua, array($key, 1), 1);
+        $redis->eval($lua, array($key, self::LOCK_VALUE), 1);
 
         return true;
     }

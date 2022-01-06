@@ -90,7 +90,7 @@ class Email
      * @return bool
      * @throws \PHPMailer\PHPMailer\Exception
      */
-    public function sendMail(string $toMail, string $name, string $subject = '', string $body = '', array $attachment = null): bool
+    public function sendMail(string $toMail, string $name, string $subject = '', string $body = '', array $attachment = null, array $header = []): bool
     {
         $mail = new PHPMailer();                                // 实例化PHPMailer对象
         $mail->CharSet = 'UTF-8';                               // 设定邮件编码，默认ISO-8859-1，如果发中文此项必须设置，否则乱码
@@ -110,6 +110,12 @@ class Email
         $mail->Subject = $subject;
         $mail->MsgHTML($body);
         $mail->AddAddress($toMail, $name);
+
+        // 自定义头
+        foreach ($header as $key => $value) {
+            $mail->addCustomHeader($key, $value);
+        }
+        
         if (is_array($attachment)) {                            // 添加附件
             foreach ($attachment as $file) {
                 is_file($file) && $mail->AddAttachment($file);
