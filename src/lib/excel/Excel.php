@@ -12,6 +12,11 @@ use PhpOffice\PhpSpreadsheet\Writer\IWriter;
 class Excel
 {
     /**
+     * 目录
+     */
+    const DIRECTORY = 'runtime/excel_tmp/';
+
+    /**
      * 基础列
      *
      * @var array
@@ -132,9 +137,9 @@ class Excel
         // 缓冲区
         $limit = 2000;
         // 生成临时文件
-        $path = $filename.'_tmp';
+        $path = self::DIRECTORY.$filename.'_tmp';
         if($i == 0) {
-            mkdir($path);
+            mkdir($path, 0777, true);
         }
         $fp = fopen($path.'/'.$filename . '_' . $i . '.csv', 'w');
         //第一次执行时将表头写入
@@ -164,7 +169,7 @@ class Excel
      */
     public static function mergeCsv(string $filename)
     {
-        $path = $filename.'_tmp';
+        $path = self::DIRECTORY.$filename.'_tmp';
         $fileList = scandir($path);
         //将所有临时文件合并成一个
         foreach ($fileList as $file){
@@ -178,7 +183,7 @@ class Excel
                     //关闭临时文件
                     fclose($tmpFile);
                     //打开或创建要合并成的文件，往末尾插入的方式添加内容并保存
-                    $tmpFile2 = fopen($filename.'.csv','a+');
+                    $tmpFile2 = fopen(self::DIRECTORY.$filename.'.csv','a+');
                     //写入内容 解决乱码问题
                     fwrite($tmpFile2,chr(0xEF).chr(0xBB).chr(0xBF));
                     if(fwrite($tmpFile2, $str)){
@@ -190,17 +195,45 @@ class Excel
         }
 
         //将文件压缩，避免文件太大，下载慢
-        $filenameZip = $filename . ".zip";
+        $filenameZip = self::DIRECTORY.$filename . ".zip";
         $zip = new \ZipArchive();
         $zip->open($filenameZip, \ZipArchive::CREATE);   //打开压缩包
-        $zip->addFile($filename.'.csv', basename($filename.'.csv'));   //向压缩包中添加文件
+        $zip->addFile(self::DIRECTORY.$filename.'.csv', basename($filename.'.csv'));   //向压缩包中添加文件
         $zip->close();  //关闭压缩包
-        unlink($filename.'.csv');
+        unlink(self::DIRECTORY.$filename.'.csv');
         foreach ($fileList as $file) {
             if(is_file($path.'/'.$file)) {
                 unlink($path.'/'.$file); //删除csv临时文件
             }
         }
         rmdir($path);
+    }
+
+    /**
+     * 删除文件
+     *
+     * @param string $filename
+     * @return bool
+     *
+     * @author sunanzhi <sunanzhi@kurogame.com>
+     * @since 2022.2.9 11:56
+     */
+    public static function delete(string $filename): bool
+    {
+        return unlink(self::DIRECTORY.$filename.'.zip');
+    }
+
+    /**
+     * 获取压缩文件名
+     *
+     * @param string $filename
+     * @return string
+     *
+     * @author sunanzhi <sunanzhi@kurogame.com>
+     * @since 2022.2.9 12:01
+     */
+    public static function getZipFile(string $filename): string
+    {
+        return self::DIRECTORY.$filename.'.zip';
     }
 }
